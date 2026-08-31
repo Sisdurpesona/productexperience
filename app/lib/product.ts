@@ -1,22 +1,12 @@
-import { Language, Product, RawProduct, ProductEnrichment } from "./types";
 import { Language, Product, RawProduct, ProductEnrichment } from "../types/product";
 
-/* =====================================================
-   PRODUCT IMAGE MAP
-
-   Untuk sementara masih menggunakan external image.
-   Nanti kita pindahkan ke /public/products/
-   ===================================================== */
-
 const IMAGE_MAP: Record<string, string> = {
+  // ChumChurum Peach 360 ml
   "1210002": "https://www.oishiiplanet.it/cdn/shop/products/soju-peach-350ml.jpg?v=1602775945",
 
+  // Gilbey's Gin 700 ml
   "1114002": "https://image.makewebcdn.com/makeweb/m_1200x600/6KKhXhmFQ/Ginnew/gilbey_gin_700.png",
 };
-
-/* =====================================================
-   ENRICHMENT DATABASE
-   ===================================================== */
 
 const ENRICHMENTS: Record<
   string,
@@ -25,10 +15,9 @@ const ENRICHMENTS: Record<
     en: ProductEnrichment;
   }
 > = {
-  /* ===================================================
-     CHUMCHURUM PEACH
-     KODE: 1210002
-     =================================================== */
+  // =====================================================
+  // CHUMCHURUM PEACH
+  // =====================================================
 
   "1210002": {
     id: {
@@ -94,10 +83,9 @@ const ENRICHMENTS: Record<
     },
   },
 
-  /* ===================================================
-     GILBEY'S GIN
-     KODE: 1114002
-     =================================================== */
+  // =====================================================
+  // GILBEY'S GIN
+  // =====================================================
 
   "1114002": {
     id: {
@@ -163,10 +151,6 @@ const ENRICHMENTS: Record<
   },
 };
 
-/* =====================================================
-   CLEAN VALUE
-   ===================================================== */
-
 function clean(value: unknown): string {
   const text = String(value ?? "").trim();
 
@@ -177,17 +161,9 @@ function clean(value: unknown): string {
   return text;
 }
 
-/* =====================================================
-   GET PRODUCT CODE
-   ===================================================== */
-
 function getCode(raw: RawProduct): string {
   return clean(raw["KODE"] || raw["Kode"] || raw["SKU"]);
 }
-
-/* =====================================================
-   GET ENRICHMENT
-   ===================================================== */
 
 function getEnrichment(code: string, language: Language, raw: RawProduct): ProductEnrichment {
   const preset = ENRICHMENTS[code]?.[language];
@@ -196,27 +172,22 @@ function getEnrichment(code: string, language: Language, raw: RawProduct): Produ
     return preset;
   }
 
+  // =====================================================
+  // FALLBACK
+  // =====================================================
+
   const item = clean(raw["ITEM"]) || "Product";
-
   const group = clean(raw["GROUP"]) || "Alcohol";
-
-  /* ===================================================
-     INDONESIA FALLBACK
-     =================================================== */
 
   if (language === "id") {
     return {
-      profile: `${item} dengan karakter khas kategori ${group}.`,
+      profile: `${item} dengan karakter khas kategori ${group}. Profil produk akan disesuaikan berdasarkan karakter dan kategori produknya.`,
 
       tasting: {
         appearance: "Informasi penampilan produk belum tersedia.",
-
         aroma: "Informasi aroma produk belum tersedia.",
-
         taste: "Informasi rasa produk belum tersedia.",
-
         mouthfeel: "Informasi mouthfeel produk belum tersedia.",
-
         finish: "Informasi finish produk belum tersedia.",
       },
 
@@ -236,22 +207,14 @@ function getEnrichment(code: string, language: Language, raw: RawProduct): Produ
     };
   }
 
-  /* ===================================================
-     ENGLISH FALLBACK
-     =================================================== */
-
   return {
-    profile: `${item} with a distinctive character from the ${group} category.`,
+    profile: `${item} with a distinctive character from the ${group} category. Product details will be refined according to its specific style and profile.`,
 
     tasting: {
       appearance: "Appearance information is not yet available.",
-
       aroma: "Aroma information is not yet available.",
-
       taste: "Taste information is not yet available.",
-
       mouthfeel: "Mouthfeel information is not yet available.",
-
       finish: "Finish information is not yet available.",
     },
 
@@ -270,10 +233,6 @@ function getEnrichment(code: string, language: Language, raw: RawProduct): Produ
     imageUrl: "",
   };
 }
-
-/* =====================================================
-   MAP RAW PRODUCT → PRODUCT
-   ===================================================== */
 
 export function mapProduct(raw: RawProduct, language: Language): Product {
   const code = getCode(raw);
