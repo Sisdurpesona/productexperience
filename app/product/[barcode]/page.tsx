@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import ProductResultClient from "../../components/ProductResultClient";
+import ProductHero from "../../components/product/ProductHero";
 import { fetchProductByBarcode } from "../../lib/api";
 import { mapProduct } from "../../lib/product";
 
@@ -9,7 +9,9 @@ type ProductPageProps = {
   }>;
 };
 
-export default async function ProductPage({ params }: ProductPageProps) {
+export default async function ProductPage({
+  params,
+}: ProductPageProps) {
   const { barcode } = await params;
 
   const cleanBarcode = decodeURIComponent(barcode).trim();
@@ -20,7 +22,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const result = await fetchProductByBarcode(cleanBarcode);
 
-  if (result.error || !result.data || Object.keys(result.data).length === 0) {
+  if (
+    result.error ||
+    !result.data ||
+    Object.keys(result.data).length === 0
+  ) {
     notFound();
   }
 
@@ -31,11 +37,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
       style={{
         minHeight: "100vh",
         background: "#F5F1EA",
-        paddingTop: "70px",
         boxSizing: "border-box",
       }}
     >
-      <ProductResultClient product={product} language="id" searchedBarcode={cleanBarcode} />
+      <ProductHero
+        product={product}
+        language="id"
+      />
     </main>
   );
 }
